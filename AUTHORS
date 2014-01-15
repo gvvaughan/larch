@@ -1,0 +1,15 @@
+Specl Contributors
+==================
+
+This file lists contributors to Larch. If you think you should be in
+this list, please file an issue on github (run `larch --help` for
+the URL).
+
+Many thanks to all users and those who have contributed bug fixes
+and suggestions.
+
+
+ * Gary V. Vaughan <gary@gnu.org>:
+   Designed and implemented Larch.
+ * Steve Donovan <steve.j.donovan@gmail.com>:
+   Maintains LuaMacro

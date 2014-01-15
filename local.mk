@@ -107,10 +107,7 @@ EXTRA_DIST +=						\
 ## Maintenance. ##
 ## ------------ ##
 
-CLEANFILES +=						\
-	bin/larch					\
-	$(NOTHING_ELSE)
-
-DISTCLEANFILES +=					\
+MAINTAINERCLEANFILES +=					\
 	doc/larch.1					\
+	bin/larch					\
 	$(NOTHING_ELSE)

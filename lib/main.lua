@@ -22,7 +22,7 @@
 --[[ Parse options. ]]--
 --[[ ============== ]]--
 
-local OptionParser = require "larch.optparse"
+local OptionParser = require "std.optparse"
 
 local parser = OptionParser [[
 larch (@PACKAGE_NAME@) @VERSION@

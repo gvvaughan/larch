@@ -49,7 +49,6 @@ LUAM_ENV  = LUA_PATH="$(srcdir)/lib/?.lua;$(LUA_PATH)"
 
 dist_noinst_DATA +=					\
 	$(srcdir)/lib/main.lua				\
-	$(srcdir)/lib/larch/optparse.lua		\
 	$(NOTHING_ELSE)
 
 # These files are distributed in $(srcdir), and we need to be careful

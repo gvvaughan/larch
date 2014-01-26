@@ -62,7 +62,7 @@ local parser = OptionParser [[
 larch (Larch) 1
 Written by Gary V. Vaughan <gary@gnu.org>, 2013
 
-Copyright (C) 2013-2104, Gary V. Vaughan
+Copyright (C) 2013-2014, Gary V. Vaughan
 Larch comes with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of Larch under the terms of the GNU
 General Public License; either version 3, or any later version.

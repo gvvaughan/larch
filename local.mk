@@ -98,6 +98,7 @@ dist_bin_SCRIPTS += bin/larch
 
 EXTRA_DIST +=						\
 	lib/larch/from.lua				\
+	lib/larch/loader.lua				\
 	doc/larch.1					\
 	$(NOTHING_ELSE)
 

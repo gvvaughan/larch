@@ -67,7 +67,7 @@ $(srcdir)/bin/larch: $(dist_noinst_DATA)
 	$(AM_V_at)rm -f '$@T'
 	$(AM_V_at)chmod 755 '$@'
 
-$(srcdir)/doc/larch.1: $(srcdir)/bin/larch
+$(srcdir)/man/man1/larch.1: $(srcdir)/bin/larch
 	@d=`echo '$@' |sed 's|/[^/]*$$||'`;			\
 	test -d "$$d" || $(MKDIR_P) "$$d"
 ## Exit gracefully if larch.1 is not writeable, such as during distcheck!
@@ -87,7 +87,7 @@ $(srcdir)/doc/larch.1: $(srcdir)/bin/larch
 ## Installation. ##
 ## ------------- ##
 
-man_MANS += doc/larch.1
+man_MANS += man/man1/larch.1
 
 dist_bin_SCRIPTS += bin/larch
 
@@ -99,7 +99,7 @@ dist_bin_SCRIPTS += bin/larch
 EXTRA_DIST +=						\
 	lib/larch/from.lua				\
 	lib/larch/loader.lua				\
-	doc/larch.1					\
+	man/man1/larch.1				\
 	$(NOTHING_ELSE)
 
 

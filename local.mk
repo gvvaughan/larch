@@ -58,11 +58,12 @@ dist_noinst_DATA +=					\
 $(srcdir)/bin/larch: $(dist_noinst_DATA)
 	@d=`echo '$@' |sed 's|/[^/]*$$||'`;			\
 	test -d "$$d" || $(MKDIR_P) "$$d"
-	$(AM_V_GEN)$(LARCH) -e 'require "main"' $(dist_noinst_DATA) \
-	| sed							\
-	  -e 's|@PACKAGE_BUGREPORT''@|$(PACKAGE_BUGREPORT)|g'	\
-	  -e 's|@PACKAGE_NAME''@|$(PACKAGE_NAME)|g'		\
-	  -e 's|@VERSION''@|$(VERSION)|g' > '$@T'
+	$(AM_V_GEN)$(LARCH)					\
+	  -e 'os.exit (require "main" (arg):execute ())'	\
+	  $(dist_noinst_DATA) |					\
+	sed -e 's|@PACKAGE_BUGREPORT''@|$(PACKAGE_BUGREPORT)|g'	\
+	    -e 's|@PACKAGE_NAME''@|$(PACKAGE_NAME)|g'		\
+	    -e 's|@VERSION''@|$(VERSION)|g' > '$@T'
 	$(AM_V_at)$(LUAM_ENV) $(LUAM) $(LUAM_OPTS) '$@T' > '$@'
 	$(AM_V_at)rm -f '$@T'
 	$(AM_V_at)chmod 755 '$@'

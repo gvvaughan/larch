@@ -18,17 +18,18 @@
 
 
 
---[[ ============== ]]--
---[[ Parse options. ]]--
---[[ ============== ]]--
+--[[ ============ ]]--
+--[[ Global Data. ]]--
+--[[ ============ ]]--
 
-local OptionParser = require "std.optparse"
 
-local parser = OptionParser [[
+local dirsep, pathsep = package.config:match ("^([^\n]+)\n([^\n]+)\n")
+
+local optspec = [[
 larch (@PACKAGE_NAME@) @VERSION@
 Written by Gary V. Vaughan <gary@gnu.org>, 2013
 
-Copyright (C) 2013-2104, Gary V. Vaughan
+Copyright (C) 2013-2014, Gary V. Vaughan
 @PACKAGE_NAME@ comes with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of @PACKAGE_NAME@ under the terms of the GNU
 General Public License; either version 3, or any later version.
@@ -47,38 +48,13 @@ standard input.
 
 Report bugs to @PACKAGE_BUGREPORT@.]]
 
-_G.arg, opts = parser:parse (_G.arg)
-
-
-
---[[ ================= ]]--
---[[ Helper functions. ]]--
---[[ ================= ]]--
-
-
-function slurp (filename)
-  local h, errmsg = io.open (filename)
-  if h then
-    return h:read "*a"
-  end
-  error (errmsg)
-end
-
-
-
---[[ ======= ]]--
---[[ Output. ]]--
---[[ ======= ]]--
-
-
-local dirsep, pathsep = package.config:match ("^([^\n]+)\n([^\n]+)\n")
 
 -- A shell-script to embed at the top of an executable lua script
 -- between 'SH=--[[' and ']]SH', so that the result can be executed
 -- as a shell script that finds a compatible Lua interpreter on the
 -- command search PATH.
 
-print [==[
+local preamble = [==[
 #!/bin/sh
 SH=--[[						# -*- mode: lua; -*-
 # If LUA is not set, search PATH for something suitable.
@@ -114,15 +90,63 @@ exec "$LUA" "$0" "$@"
 ]==]
 
 
-for _, f in ipairs (_G.arg) do
-  local module = f:gsub ("^[%." .. dirsep .. "]*", ""):
-                   gsub ("^lib" .. dirsep .. "(.*)%.lua$", "%1")
-  print ('package.preload["' .. module:gsub (dirsep, ".") ..
-         '"] = (function ()')
-  print (slurp (f))
-  print "end)"
+
+--[[ ================= ]]--
+--[[ Helper functions. ]]--
+--[[ ================= ]]--
+
+
+function slurp (filename)
+  local h, errmsg = io.open (filename)
+  if h then
+    return h:read "*a"
+  end
+  error (errmsg)
 end
 
-print (opts.evaluate)
 
-os.exit (0)
+
+--[[ ======= ]]--
+--[[ Output. ]]--
+--[[ ======= ]]--
+
+
+local function execute (self)
+  -- Parse command line options.
+  local parser = require "std.optparse" (optspec)
+
+  self.arg, self.opts = parser:parse (self.arg, self.opts)
+
+  print (preamble)
+
+  for _, f in ipairs (self.arg) do
+    local module = f:gsub ("^[%." .. dirsep .. "]*", ""):
+                     gsub ("^lib" .. dirsep .. "(.*)%.lua$", "%1")
+    print ('package.preload["' .. module:gsub (dirsep, ".") ..
+           '"] = (function ()')
+    print (slurp (f))
+    print "end)"
+  end
+
+  print (self.opts.evaluate)
+
+  return 0
+end
+
+return require "std.object" {
+  _type = "Main",
+
+  -- Instance data.
+  arg = {},
+  opts = {},
+
+  -- Methods.
+  __index = {
+    execute = execute,
+  },
+
+  _init = function (self, arg)
+    self.arg = arg
+    return self
+  end,
+}

@@ -31,7 +31,7 @@ test -n "$LUA" || {
 exec "$LUA" "$0" "$@"
 ]]SH
 
-package.preload["main"] = (function ()
+package.preload["larch.main"] = (function ()
 -- Generate a self extracting Lua archive.
 -- Written by Gary V. Vaughan, 2013
 --
@@ -186,5 +186,5 @@ return require "std.object" {
 }
 
 end)
-os.exit (require "main" (arg):execute ())
+os.exit (require "larch.main" (arg):execute ())
 

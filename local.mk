@@ -48,7 +48,7 @@ LUAM_OPTS = -llarch.from -d
 LUAM_ENV  = LUA_PATH="$(srcdir)/lib/?.lua;$(LUA_PATH)"
 
 dist_noinst_DATA +=					\
-	$(srcdir)/lib/main.lua				\
+	$(srcdir)/lib/larch/main.lua			\
 	$(NOTHING_ELSE)
 
 # These files are distributed in $(srcdir), and we need to be careful
@@ -59,7 +59,7 @@ $(srcdir)/bin/larch: $(dist_noinst_DATA)
 	@d=`echo '$@' |sed 's|/[^/]*$$||'`;			\
 	test -d "$$d" || $(MKDIR_P) "$$d"
 	$(AM_V_GEN)$(LARCH)					\
-	  -e 'os.exit (require "main" (arg):execute ())'	\
+	  -e 'os.exit (require "larch.main" (arg):execute ())'	\
 	  $(dist_noinst_DATA) |					\
 	sed -e 's|@PACKAGE_BUGREPORT''@|$(PACKAGE_BUGREPORT)|g'	\
 	    -e 's|@PACKAGE_NAME''@|$(PACKAGE_NAME)|g'		\

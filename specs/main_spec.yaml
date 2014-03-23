@@ -1,0 +1,34 @@
+specify larch:
+- before: |
+    function larch (...)
+      local LARCH = os.getenv "LARCH" or "bin/larch"
+      return require "specl.shell".spawn {
+        LARCH, ...,
+        env = { LUA_PATH=package.path },
+      }
+    end
+
+- describe command-line interface:
+  - it reports version number:
+      expect (larch "--version").
+        to_match_output "^%s*larch %(Larch%) [0-9%.]+"
+  - it reports copyright information:
+      expect (larch "--version").
+        to_match_output "\n%s*Copyright %(C%) [12][90]%d%d"
+  - it reports license summary:
+      expect (larch "--version").
+        to_match_output "ABSOLUTELY NO WARRANTY"
+  - it displays help text: |
+      expect (larch "--help").
+        to_match_output "^%s*Usage: larch.*\n%s*Options:"
+  - it gives a bug reporting address: |
+      expect (larch "--help").to_match_output.any_of {
+         "\n%s*Report bugs to http://%S+%.%S+/",
+         "\n%s*Report bugs to %S*%w+@%S+%.%S+",
+      }
+  - it diagnoses unrecognised options: |
+      expect (larch "--notarealoption").
+        to_contain_error "error: unrecognised option '--notarealoption'"
+      expect (larch "-,").
+        to_contain_error "error: unrecognised option '-,'"
+

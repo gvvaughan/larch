@@ -76,6 +76,8 @@ Self-extracting Lua ARCHive generator.
 If no FILE is listed, or where '-' is given as a FILE, then read from
 standard input.
 
+Options:
+
       --help            print this help, then exit
       --version         print version number, then exit
   -e, --evaluate=EXPR   expression to launch archive
@@ -154,6 +156,14 @@ local function execute (self)
   print (preamble)
 
   for _, f in ipairs (self.arg) do
+    -- Diagnose unrecognised options.
+    local h = io.open (f)
+    if h == nil and f:match "^%-" then
+      return parser:opterr ("unrecognised option '" .. f .. "'")
+    end
+    h:close ()
+
+    -- Slurp remaining files.
     local module = f:gsub ("^[%." .. dirsep .. "]*", ""):
                      gsub ("^lib" .. dirsep .. "(.*)%.lua$", "%1")
     print ('package.preload["' .. module:gsub (dirsep, ".") ..

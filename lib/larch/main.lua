@@ -17,6 +17,10 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+local std_io = require "std.io"
+
+from std_io import slurp
+
 
 --[[ ============ ]]--
 --[[ Global Data. ]]--
@@ -90,21 +94,6 @@ test -n "$LUA" || {
 exec "$LUA" "$0" "$@"
 ]]SH
 ]==]
-
-
-
---[[ ================= ]]--
---[[ Helper functions. ]]--
---[[ ================= ]]--
-
-
-function slurp (filename)
-  local h, errmsg = io.open (filename)
-  if h then
-    return h:read "*a"
-  end
-  error (errmsg)
-end
 
 
 

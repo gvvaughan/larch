@@ -51,6 +51,10 @@ package.preload["larch.main"] = (function ()
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+local std_io = require "std.io"
+
+local slurp = std_io.slurp
+
 
 --[[ ============ ]]--
 --[[ Global Data. ]]--
@@ -124,21 +128,6 @@ test -n "$LUA" || {
 exec "$LUA" "$0" "$@"
 ]]SH
 ]==]
-
-
-
---[[ ================= ]]--
---[[ Helper functions. ]]--
---[[ ================= ]]--
-
-
-function slurp (filename)
-  local h, errmsg = io.open (filename)
-  if h then
-    return h:read "*a"
-  end
-  error (errmsg)
-end
 
 
 

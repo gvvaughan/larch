@@ -18,6 +18,7 @@
 /configure
 /larch-*.rockspec
 /larch-*.tar.gz
+/man
 /stamp-h1
 GNUmakefile
 Makefile.am

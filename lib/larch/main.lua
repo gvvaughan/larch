@@ -138,6 +138,7 @@ return require "std.object" {
   -- Instance data.
   arg = {},
   opts = {},
+  inprocess = _G,
 
   -- Methods.
   __index = {

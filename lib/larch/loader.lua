@@ -20,13 +20,13 @@
  Macro-using Lua package searchers.
 
  Use macros in your source code, and add one of the searchers in this
- module to `package.loaders` to expand macros to regular Lua code
+ module to `package.loader` to expand macros to regular Lua code
  before byte-compiling for execution.
 
-     local loaders = require "larch.loaders"
-     table.insert (package.loaders, 1, loaders.expand)
+     local loader = require "larch.loader"
+     table.insert (package.loaders, 1, loader.expand)
 
- @module larch.loaders
+ @module larch.loader
 ]]
 
 
@@ -50,23 +50,11 @@ local dirsep, pathsep, path_mark =
   string.match (package.config, "^([^\n]+)\n([^\n]+)\n([^\n]+)\n")
 
 
---- Search package.path with a transform callback for module name.
--- @string name module name to load
--- @func[opt] transform module name transform function
--- @return compiled module as a function, or `nil` if not found
--- @return 
-local function searcher (name, transform)
-  for m in package.path:gmatch ("([^" .. pathsep .. "])") do
-    local name = name:gsub ("%.", dirsep)
-    local path = m:gsub (path_mark, name)
-    if transform ~= nil then path = transform (path) end
-    local fh,e = io.open (path, "r")
-    if fh then
-      local content = fh:read "*a"
-      fh:close ()
-      return macro.substitute_tostring (content)
-    end
-  end
+--- Ensure pattern meta-characters are escaped with a leading '%'.
+-- @string s a string
+-- @return s with pattern meta-characters escaped
+local function esc (s)
+  return (string.gsub (s, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0"))
 end
 
 
@@ -74,8 +62,38 @@ end
 -- @string name module name to load
 -- @func transform module name transform function
 -- @return compiled module as a function, or `nil` if not found
-local function loader (name, transform)
-  return loadstring (searcher (name, transform), name)
+local function searcher (name, transform)
+  local errbuf = {}
+  for m in package.path:gmatch ("([^" .. esc (pathsep) .. "]+)") do
+    local path = transform (m:gsub (esc (path_mark), (name:gsub ("%.", dirsep))))
+    local fh, err = io.open (path, "r")
+    if fh == nil then
+      errbuf[#errbuf + 1] = "\topen file '" .. path .. "' failed: " .. err
+    else
+
+      -- Found and opened...
+      local source = fh:read "*a"
+      fh:close ()
+      local content, err = macro.substitute_tostring (source)
+      if content == nil and err ~= nil then
+        errbuf[#errbuf + 1] = "\tmacro expansion failed in '" .. path.. "': " .. err
+      else
+
+	-- ...and macro substituted...
+        local loadfn, err = loadstring (content, name)
+        if type (loadfn) ~= "function" then
+         errbuf[#errbuf + 1] = "\tloadstring '" .. path .. "' failed: " .. err
+        else
+
+          -- ...and successfully loaded! Return it!
+          return loadfn
+        end
+      end
+    end
+  end
+
+  -- Paths exhausted, return the list of failed attempts.
+  return table.concat (errbuf, "\n")
 end
 
 
@@ -94,7 +112,7 @@ end
 -- @string name module name to load
 -- @return compiled module as a function, or `nil` if not found
 local function expand (name)
-  return loader (name)
+  return searcher (name, function (name) return name end)
 end
 
 
@@ -115,9 +133,8 @@ end
 
 
 --- @export
-M = {
+return {
   expand   = expand,
   mexpand  = mexpand,
+  searcher = searcher,
 }
-
-return M

@@ -1,7 +1,7 @@
 specify larch:
 - describe command-line interface:
   - it reports version number:
-      expect (larch "--version").
+      expect (spawn "--version").
         to_match_output "^%s*larch %(Larch%) [0-9%.]+"
   - it reports copyright information:
       expect (larch "--version").
@@ -13,7 +13,7 @@ specify larch:
       expect (larch "--help").
         to_match_output "^%s*Usage: larch.*\n%s*Options:"
   - it gives a bug reporting address: |
-      expect (larch "--help").to_match_output.any_of {
+      expect (spawn "--help").to_match_output.any_of {
          "\n%s*Report bugs to http://%S+%.%S+/",
          "\n%s*Report bugs to %S*%w+@%S+%.%S+",
       }

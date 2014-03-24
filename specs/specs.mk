@@ -25,4 +25,8 @@ specl_SPECS =						\
 	$(srcdir)/specs/main_spec.yaml			\
 	$(NOTHING_ELSE)
 
+EXTRA_DIST =						\
+	$(srcdir)/specs/spec_helper.lua			\
+	$(NOTHING_ELSE)
+
 include build-aux/specl.mk

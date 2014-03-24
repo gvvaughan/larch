@@ -1,13 +1,4 @@
 specify larch:
-- before: |
-    function larch (...)
-      local LARCH = os.getenv "LARCH" or "bin/larch"
-      return require "specl.shell".spawn {
-        LARCH, ...,
-        env = { LUA_PATH=package.path },
-      }
-    end
-
 - describe command-line interface:
   - it reports version number:
       expect (larch "--version").

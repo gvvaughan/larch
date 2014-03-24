@@ -22,6 +22,7 @@
 ## ------ ##
 
 specl_SPECS =						\
+	$(srcdir)/specs/from_spec.yaml			\
 	$(srcdir)/specs/main_spec.yaml			\
 	$(NOTHING_ELSE)
 

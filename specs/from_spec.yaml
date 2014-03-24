@@ -1,0 +1,7 @@
+specify from:
+- it imports single symbols:
+    expect (macro.substitute_tostring "from foo import bar").
+      to_be "local bar = foo.bar"
+- it imports multiple symbols:
+    expect (macro.substitute_tostring "from foo import bar, baz").
+      to_be "local bar, baz = foo.bar, foo.baz"

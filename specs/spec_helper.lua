@@ -5,6 +5,10 @@ local std       = require "specl.std"
 -- ...which we use to add local larch directory to search path.
 package.path = std.package.normalize ("lib/?.lua", package.path)
 
+-- Language macros.
+macro = require "macro"
+require "larch.from"
+
 -- Now we can insert the macro expanding module loader...
 local loader = require "larch.loader"
 if package.loaders[1] ~= loader.expand then

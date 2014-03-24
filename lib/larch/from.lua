@@ -34,6 +34,11 @@ end
 
 -- Define from syntax as a LuaMacro macro.
 macro.define ('from', function (get)
+  if get:peek (1) ~= "iden" then
+    -- Not followed by an identifier, pass through.
+    return nil, true
+  end
+
   local prefix = get:name () .. "."
   while get:peek (1) == "." do
     get ()

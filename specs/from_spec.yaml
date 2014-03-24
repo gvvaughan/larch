@@ -1,7 +1,28 @@
 specify from:
+- before:
+    expand = function (lua)
+      local out, li = macro.substitute (lua, lua)
+      return table.concat (out)
+    end
 - it imports single symbols:
-    expect (macro.substitute_tostring "from foo import bar").
+    expect (expand "from foo import bar").
       to_be "local bar = foo.bar"
 - it imports multiple symbols:
-    expect (macro.substitute_tostring "from foo import bar, baz").
+    expect (expand "from foo import bar, baz").
       to_be "local bar, baz = foo.bar, foo.baz"
+- it does not prevent use of 'from' in other code:
+    lua = [[
+      local function inject (into, from)
+        for k, v in pairs (from) do
+          local tfrom, tinto = type (v), type (into[k])
+          if tfrom == "table" and (tinto == "table" or tinto == "nil" then
+            into[k] = into[k] or {}
+            inject (into[k], from[k])
+          else
+            into[k] = from[k]
+          end
+        end
+        return into
+      end
+    ]]
+    expect (expand (lua)).to_be (lua)

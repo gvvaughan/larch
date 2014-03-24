@@ -161,7 +161,11 @@ local function execute (self)
     print "end)"
   end
 
-  print (self.opts.evaluate)
+  local eargs = self.opts.evaluate
+  if type (eargs) ~= "table" then eargs = {eargs} end
+  for _, earg in ipairs (eargs) do
+    print (earg)
+  end
 
   return 0
 end

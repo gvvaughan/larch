@@ -1,5 +1,10 @@
 specify larch:
 - describe command-line interface:
+  - it diagnoses unrecognised options: |
+      expect (larch "--notarealoption").
+        to_contain_error "error: unrecognised option '--notarealoption'"
+      expect (larch "-,").
+        to_contain_error "error: unrecognised option '-,'"
   - it reports version number:
       expect (spawn "--version").
         to_match_output "^%s*larch %(Larch%) [0-9%.]+"
@@ -17,9 +22,9 @@ specify larch:
          "\n%s*Report bugs to http://%S+%.%S+/",
          "\n%s*Report bugs to %S*%w+@%S+%.%S+",
       }
-  - it diagnoses unrecognised options: |
-      expect (larch "--notarealoption").
-        to_contain_error "error: unrecognised option '--notarealoption'"
-      expect (larch "-,").
-        to_contain_error "error: unrecognised option '-,'"
-
+  - it outputs the execute argument last:
+      expect (larch ("-e", "output this at the end")).
+        to_match_output "output this at the end%s*$"
+  - it outputs multiple execute options in order:
+      expect (larch ("-e", "first", "-e", "another")).
+        to_match_output "first\nanother%s*$"

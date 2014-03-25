@@ -4,6 +4,8 @@ specify from:
       local out, li = macro.substitute (lua, lua)
       return table.concat (out)
     end
+- it diagnoses missing 'import' token:
+    expect (expand "from foo impart bar").to_error "expected import"
 - it imports single symbols:
     expect (expand "from foo import bar").
       to_be "local bar = foo.bar"

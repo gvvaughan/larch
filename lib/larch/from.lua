@@ -47,8 +47,11 @@ macro.define ('from', function (get)
 
   local args = {}
   repeat
-    get () -- "import" or ","
-    get () -- space
+    if #args == 0 then
+      get:expecting ("iden", "import")
+    else
+      get:expecting ","
+    end
     args[#args + 1] = get:name ()
   until get:peek (1) ~= ","
 

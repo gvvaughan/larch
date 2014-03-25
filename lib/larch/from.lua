@@ -34,15 +34,21 @@ end
 
 -- Define from syntax as a LuaMacro macro.
 macro.define ('from', function (get)
-  if get:peek (1) ~= "iden" then
+  local type, preamble, prefix = get:peek (1), ""
+
+  if type == "iden" then
+    prefix = get:name () .. "."
+    while get:peek (1) == "." do
+      get ()
+      prefix = prefix .. get:name () .. "."
+    end
+  elseif type == "string" then
+    local name = get:string ()
+    preamble = 'local ' .. name .. ' = require "' .. name .. '"\n'
+    prefix = name .. "."
+  else
     -- Not followed by an identifier, pass through.
     return nil, true
-  end
-
-  local prefix = get:name () .. "."
-  while get:peek (1) == "." do
-    get ()
-    prefix = prefix .. get:name () .. "."
   end
 
   local args = {}
@@ -55,6 +61,6 @@ macro.define ('from', function (get)
     args[#args + 1] = get:name ()
   until get:peek (1) ~= ","
 
-  return "local "..table.concat (args, ", ").." = " ..
+  return preamble .. "local "..table.concat (args, ", ").." = " ..
          mapconcat (prefix, args, ", ")
 end)

@@ -6,12 +6,6 @@ specify from:
     end
 - it diagnoses missing 'import' token:
     expect (expand "from foo impart bar").to_error "expected import"
-- it imports single symbols:
-    expect (expand "from foo import bar").
-      to_be "local bar = foo.bar"
-- it imports multiple symbols:
-    expect (expand "from foo import bar, baz").
-      to_be "local bar, baz = foo.bar, foo.baz"
 - it does not prevent use of 'from' in other code:
     lua = [[
       local function inject (into, from)
@@ -28,3 +22,21 @@ specify from:
       end
     ]]
     expect (expand (lua)).to_be (lua)
+- context with identifier:
+  - it imports single symbols:
+      expect (expand "from foo import bar").
+        to_be "local bar = foo.bar"
+  - it imports multiple symbols:
+      expect (expand "from foo import bar, baz").
+        to_be "local bar, baz = foo.bar, foo.baz"
+- context with string:
+  - it imports single symbols:
+      expect (expand 'from "foo" import bar').
+        to_be 'local foo = require "foo"\nlocal bar = foo.bar'
+      expect (expand "from 'foo' import bar").
+        to_be 'local foo = require "foo"\nlocal bar = foo.bar'
+  - it imports multiple symbols:
+      expect (expand 'from "foo" import bar, baz').
+        to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'
+      expect (expand "from 'foo' import bar, baz").
+        to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'

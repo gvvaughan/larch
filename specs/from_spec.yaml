@@ -22,21 +22,69 @@ specify from:
       end
     ]]
     expect (expand (lua)).to_be (lua)
-- context with identifier:
+
+- context with identifier argument:
   - it imports single symbols:
       expect (expand "from foo import bar").
         to_be "local bar = foo.bar"
+  - it imports single symbols from sub-tables:
+      expect (expand "from foo.bar import baz").
+        to_be "local baz = foo.bar.baz"
   - it imports multiple symbols:
       expect (expand "from foo import bar, baz").
         to_be "local bar, baz = foo.bar, foo.baz"
-- context with string:
-  - it imports single symbols:
-      expect (expand 'from "foo" import bar').
-        to_be 'local foo = require "foo"\nlocal bar = foo.bar'
-      expect (expand "from 'foo' import bar").
-        to_be 'local foo = require "foo"\nlocal bar = foo.bar'
-  - it imports multiple symbols:
-      expect (expand 'from "foo" import bar, baz').
-        to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'
-      expect (expand "from 'foo' import bar, baz").
-        to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'
+  - it imports multiple symbols from sub-tables:
+      expect (expand "from foo.bar import baz, quux").
+        to_be "local baz, quux = foo.bar.baz, foo.bar.quux"
+
+- context with string argument:
+  - context in single-quotes:
+    - it imports single symbols:
+        expect (expand "from 'foo' import bar").
+          to_be 'local foo = require "foo"\nlocal bar = foo.bar'
+    - it imports single symbols from sub-tables:
+        expect (expand "from 'foo' import bar.baz").
+          to_be 'local foo = require "foo"\nlocal baz = foo.bar.baz'
+    - it imports single symbols from sub-modules:
+        expect (expand "from 'foo.bar' import baz").
+          to_be 'local bar = require "foo.bar"\nlocal baz = bar.baz'
+    - it imports single symbols from sub-tables of sub-modules:
+        expect (expand "from 'foo.bar' import baz.qux").
+          to_be 'local bar = require "foo.bar"\nlocal qux = bar.baz.qux'
+    - it imports multiple symbols:
+        expect (expand "from 'foo' import bar, baz").
+          to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'
+    - it imports multiple symbols from sub-tables:
+        expect (expand "from 'foo' import bar.baz, qux.quux").
+          to_be 'local foo = require "foo"\nlocal baz, quux = foo.bar.baz, foo.qux.quux'
+    - it imports multiple symbols from sub-modules:
+        expect (expand "from 'foo.bar' import baz, quux").
+          to_be 'local bar = require "foo.bar"\nlocal baz, quux = bar.baz, bar.quux'
+    - it imports multiple symbols from sub-tables of sub-modules:
+        expect (expand "from 'foo.bar' import baz.qux, quux.ter").
+          to_be 'local bar = require "foo.bar"\nlocal qux, ter = bar.baz.qux, bar.quux.ter'
+  - context in double-quotes:
+    - it imports single symbols:
+        expect (expand 'from "foo" import bar').
+          to_be 'local foo = require "foo"\nlocal bar = foo.bar'
+    - it imports single symbols from sub-tables:
+        expect (expand 'from "foo" import bar.baz').
+          to_be 'local foo = require "foo"\nlocal baz = foo.bar.baz'
+    - it imports single symbols from sub-modules:
+        expect (expand 'from "foo.bar" import baz').
+          to_be 'local bar = require "foo.bar"\nlocal baz = bar.baz'
+    - it imports single symbols from sub-tables of sub-modules:
+        expect (expand 'from "foo.bar" import baz.qux').
+          to_be 'local bar = require "foo.bar"\nlocal qux = bar.baz.qux'
+    - it imports multiple symbols:
+        expect (expand 'from "foo" import bar, baz').
+          to_be 'local foo = require "foo"\nlocal bar, baz = foo.bar, foo.baz'
+    - it imports multiple symbols from sub-tables:
+        expect (expand 'from "foo" import bar.baz, qux.quux').
+          to_be 'local foo = require "foo"\nlocal baz, quux = foo.bar.baz, foo.qux.quux'
+    - it imports multiple symbols from sub-modules:
+        expect (expand 'from "foo.bar" import baz, quux').
+          to_be 'local bar = require "foo.bar"\nlocal baz, quux = bar.baz, bar.quux'
+    - it imports multiple symbols from sub-tables of sub-modules:
+        expect (expand 'from "foo.bar" import baz.qux, quux.ter').
+          to_be 'local bar = require "foo.bar"\nlocal qux, ter = bar.baz.qux, bar.quux.ter'

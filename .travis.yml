@@ -53,7 +53,7 @@ script:
   - export PATH=`pwd`/luarocks/bin:$PATH
 
   # Install extra rocks into $LUAROCKS_CONFIG rocks tree.
-  - $LUAROCKS install lyaml;
+  - $LUAROCKS install lyaml; $LUAROCKS install specl;
 
   # Make git rockspec for this larch
   - make rockspecs LUAROCKS="$LUAROCKS" V=1

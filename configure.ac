@@ -38,6 +38,6 @@ AC_PROG_EGREP
 AC_PROG_SED
 
 dnl Generate output files
-SS_CONFIG_TRAVIS
+SS_CONFIG_TRAVIS([specl])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
